@@ -1,0 +1,2 @@
+08:00:27:e6:e5:59 -->> windows-machine
+d4:25:8b:25:d8:89 -->> home-machine
